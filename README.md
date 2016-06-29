@@ -2,6 +2,27 @@
 
 A ruby application for Timesync Visualizations and basic implementation of the rimesync gem.
 
+### Build Instructions
+
+```
+$ git clone https://github.com/osuosl/timevis
+$ cd timevis
+$ bundle install
+```
+
+
+### Running the app
+
+```
+$ ruby app.rb
+```
+
+Or reload development server - 
+
+```
+$ shotgun app.rb
+```
+
 ### Visualizations
 
 #### 1. [Project vs Hours Worked](http://bl.ocks.org/iCHAIT/10986ac3f8172a6344e5)
