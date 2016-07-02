@@ -1,0 +1,84 @@
+<!-- <!DOCTYPE html> -->
+<!-- <html> -->
+<!-- <head> -->
+
+    <style>
+        text {
+            font: 12px sans-serif;
+        }
+        svg {
+            display: block;
+        }
+        html, body, #chart1, svg {
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+<!-- </head> -->
+<!-- <body> -->
+
+<div id="chart1" style="background: white;max-width: 70%;max-height: 70%;margin-left: 200px;margin-top:100px">
+    <svg></svg>
+</div>
+    <script src="js/d3.min.js" charset="utf-8"></script>
+    <script src="js/nv.d3.js"></script>
+<script>
+    historicalBarChart = [
+        {
+            key: "Cumulative Return",
+            values: [
+                {
+                    "label" : "A" ,
+                    "value" : 29
+                } ,
+                {
+                    "label" : "B" ,
+                    "value" : 50
+                } ,
+                {
+                    "label" : "C" ,
+                    "value" : 32
+                } ,
+                {
+                    "label" : "D" ,
+                    "value" : 96
+                } ,
+                {
+                    "label" : "E" ,
+                    "value" : 19
+                } ,
+                {
+                    "label" : "F" ,
+                    "value" : 98.079782601442
+                } ,
+                {
+                    "label" : "G" ,
+                    "value" : 13.925743130903
+                } ,
+                {
+                    "label" : "H" ,
+                    "value" : 5.1387322875705
+                }
+            ]
+        }
+    ];
+    nv.addGraph(function() {
+        var chart = nv.models.discreteBarChart()
+            .x(function(d) { return d.label })
+            .y(function(d) { return d.value })
+            .staggerLabels(true)
+            //.staggerLabels(historicalBarChart[0].values.length > 8)
+            .showValues(true)
+            .duration(250)
+            ;
+        d3.select('#chart1 svg')
+            .datum(historicalBarChart)
+            .call(chart);
+        nv.utils.windowResize(chart.update);
+        return chart;
+    });
+</script>
+<!-- </body> -->
+<!-- </html> -->
