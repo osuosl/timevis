@@ -43,7 +43,7 @@
                    <span class="icon-bar"></span>
                    <span class="icon-bar"></span>
                </button>
-               <a class="navbar-brand" href="index.html">TimeVis</a>
+               <a class="navbar-brand" href="/home">TimeVis</a>
            </div>
            <!-- Top Menu Items -->
            <ul class="nav navbar-right top-nav">
@@ -63,8 +63,28 @@
            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
            <div class="collapse navbar-collapse navbar-ex1-collapse">
                <ul class="nav navbar-nav side-nav">
-                   <li class="active">
-                       <a href="/home"><i class="fa fa-fw fa-line-chart"></i> Visualizations</a>
+                   <li>
+                       <a href="javascript:;" data-toggle="collapse" data-target="#demo"><i class="fa fa-fw fa-line-chart"></i> Visualizations <i class="fa fa-fw fa-caret-down"></i></a>
+                       <ul id="demo" class="collapse">
+                           <li>
+                               <a href="/projVsHours">Project Vs Hours</a>
+                           </li>
+                           <li>
+                               <a href="/lifeCycle">Lifecycle of Project</a>
+                           </li>
+                           <li>
+                               <a href="/usersVsHours">Users Vs Hours</a>
+                           </li>
+                           <li>
+                               <a href="/activityVAr">Activity Variation</a>
+                           </li>
+                           <li>
+                               <a href="/projVsTeam">Projects Vs Team</a>
+                           </li>
+                           <li>
+                               <a href="/activityVsTime">Activities Vs Times</a>
+                           </li>
+                       </ul>
                    </li>
                    <li>
                        <a href="/times"><i class="fa fa-fw fa-clock-o"></i> Times</a>

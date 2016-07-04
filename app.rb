@@ -8,44 +8,52 @@ get '/home' do
   erb :home
 end
 
+# get_activities
 get '/activities' do
   erb :activities
 end
 
+# get_projects
 get '/projects' do
   erb :projects
 end
 
+# get_times
 get '/times' do
   erb :times
 end
 
+# get_users
 get '/users' do
   erb :users
 end
 
+# Visualization: Project vs Hours Worked
 get '/projVsHours' do
-  # "Project vs Hours Worked"
-  # erb :chart1, :layout => false
-  erb :chart1
+  erb :projVsHours
 end
 
+# Time Usage vs Life cycle of a project over months/years
 get '/lifeCycle' do
-  "Time Usage vs Life cycle of a project over months/years."
+  erb :lifeCycle
 end
 
-get '/UsersVsHours' do
-  "Users vs Hours Worked on weekly/monthly basis"
+# Users vs Hours Worked on weekly/monthly basis
+get '/usersVsHours' do
+  erb :usersVsHours
 end
 
-get '/ActivityVAr' do
-  "Activity variation for a user over a year"
+# Activity variation for a user over a year
+get '/activityVAr' do
+  erb :activityVAr
 end
 
-get '/ProjVsTeam' do
-  'All Projects vs Team Size'
+# All Projects vs Team Size
+get '/projVsTeam' do
+  erb :projVsTeam
 end
 
+# Activities vs Time Spent by org. on each project
 get '/activityVsTime' do
-  'Activities vs Time Spent by org. on each project.'
+  erb :activityVsTime
 end
