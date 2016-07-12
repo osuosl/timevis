@@ -1,61 +1,150 @@
+<style>
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
 
-<div id="chart1" class='with-3d-shadow with-transitions'>
-    <svg></svg>
-</div>
-<script src="bower_components/stream_layers/index.js"></script>
+.bar {
+  fill: steelblue;
+}
+
+.x.axis path {
+  display: none;
+}
+
+</style>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Project VS Team Size</h1>
+            </div>
+        </div>
+
 <script>
-    var test_data = index(3,10+Math.random()*100,.1).map(function(data, i) {
-        return {
-            key: 'Stream' + i,
-            values: data
-        };
-    });
-    console.log('td',test_data);
-    var negative_test_data = new d3.range(0,3).map(function(d,i) {
-        return {
-            key: 'Stream' + i,
-            values: new d3.range(0,11).map( function(f,j) {
-                return {
-                    y: 10 + Math.random()*100 * (Math.floor(Math.random()*100)%2 ? 1 : -1),
-                    x: j
-                }
-            })
-        };
-    });
-    var chart;
-    nv.addGraph(function() {
-        chart = nv.models.multiBarChart()
-            .barColor(d3.scale.category20().range())
-            .duration(300)
-            .margin({bottom: 100, left: 70})
-            .rotateLabels(45)
-            .groupSpacing(0.1)
-        ;
-        chart.reduceXTicks(false).staggerLabels(true);
-        chart.xAxis
-            .axisLabel("ID of Furry Cat Households")
-            .axisLabelDistance(35)
-            .showMaxMin(false)
-            .tickFormat(d3.format(',.6f'))
-        ;
-        chart.yAxis
-            .axisLabel("Change in Furry Cat Population")
-            .axisLabelDistance(-5)
-            .tickFormat(d3.format(',.01f'))
-        ;
-        chart.dispatch.on('renderEnd', function(){
-            nv.log('Render Complete');
-        });
-        d3.select('#chart1 svg')
-            .datum(negative_test_data)
-            .call(chart);
-        nv.utils.windowResize(chart.update);
-        chart.dispatch.on('stateChange', function(e) {
-            nv.log('New State:', JSON.stringify(e));
-        });
-        chart.state.dispatch.on('change', function(state){
-            nv.log('state', JSON.stringify(state));
-        });
-        return chart;
-    });
+var margin = {top: 20, right: 20, bottom: 30, left: 300},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var x0 = d3.scale.ordinal()
+    .rangeRoundBands([0, width], .1);
+
+var x1 = d3.scale.ordinal();
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var color = d3.scale.ordinal()
+    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+var xAxis = d3.svg.axis()
+    .scale(x0)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+    // .tickFormat(d3.format(".2s"));
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var data = [
+  {
+    "Project": "what's fresh",
+    "Members": 8,
+    "Spectators": 14,
+    "Managers": 2
+  },
+  {
+    "Project": "pgd",
+    "Members": 7,
+    "Spectators": 13,
+    "Managers": 1
+  },
+  {
+    "Project": "timesync-node",
+    "Members": 6,
+    "Spectators": 15,
+    "Managers": 2
+  },
+  {
+    "Project": "fenestra",
+    "Members": 9,
+    "Spectators": 13,
+    "Managers": 1
+  },
+  {
+    "Project": "pymesync",
+    "Members": 8,
+    "Spectators": 10,
+    "Managers": 2
+  }
+];
+
+
+  var ageNames = d3.keys(data[0]).filter(function(key) { return key !== "Project"; });
+
+  data.forEach(function(d) {
+    d.ages = ageNames.map(function(name) { return {name: name, value: +d[name]}; });
+  });
+
+  x0.domain(data.map(function(d) { return d.Project; }));
+  x1.domain(ageNames).rangeRoundBands([0, x0.rangeBand()]);
+  y.domain([0, d3.max(data, function(d) { return d3.max(d.ages, function(d) { return d.value; }); })]);
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Team Size");
+
+  var Project = svg.selectAll(".Project")
+      .data(data)
+    .enter().append("g")
+      .attr("class", "Project")
+      .attr("transform", function(d) { return "translate(" + x0(d.Project) + ",0)"; });
+
+  Project.selectAll("rect")
+      .data(function(d) { return d.ages; })
+    .enter().append("rect")
+      .attr("width", x1.rangeBand())
+      .attr("x", function(d) { return x1(d.name); })
+      .attr("y", function(d) { return y(d.value); })
+      .attr("height", function(d) { return height - y(d.value); })
+      .style("fill", function(d) { return color(d.name); });
+
+  var legend = svg.selectAll(".legend")
+      .data(ageNames.slice().reverse())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("x", width - 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color);
+
+  legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
 </script>
+</div>
