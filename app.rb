@@ -27,3 +27,8 @@ end
 get '/users' do
   erb :users
 end
+
+# Users vs Hours Worked on weekly/monthly basis
+get '/users_vs_hours' do
+  erb :users_vs_hours
+end
