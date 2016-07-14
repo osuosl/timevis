@@ -1,0 +1,33 @@
+{
+  "name": "timevis",
+  "homepage": "https://github.com/osuosl/timevis",
+  "authors": [
+    "OSU Open Source Lab"
+  ],
+  "description": "A ruby application for Timesync Visualizations and implementation of the rimesync gem.",
+  "main": [
+    "public/dist/css/sb-admin-2.css",
+    "public/dist/js/sb-admin-2.js"
+  ],
+  "keywords": [
+    "timesync",
+    "visualizations",
+    "sinatra"
+  ],
+  "license": "Apache",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.6",
+    "font-awesome": "~4.2.0",
+    "bootstrap-social": "~4.8.0",
+    "nvd3": "~ 1.8.4",
+    "stream_layers": "https://github.com/novus/nvd3/blob/master/examples/lib/stream_layers.js"
+  }
+}
