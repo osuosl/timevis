@@ -27,3 +27,8 @@ end
 get '/users' do
   erb :users
 end
+
+# Visualization: Project vs Hours Worked
+get '/proj_vs_hours' do
+  erb :proj_vs_hours
+end
