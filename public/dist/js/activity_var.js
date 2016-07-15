@@ -24,12 +24,12 @@ var yAxis = d3.svg.axis()
 var line = d3.svg.line()
     .interpolate("basis")
     .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.temperature); });
+    .y(function(d) { return y(d.time); });
 
 var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right+100)
     .attr("height", height + margin.top + margin.bottom + 50)
-  .append("g")
+    .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 var data = [{"date":"20111001","Testing":63.4,"Coding":52.7,"Code-Review":72.2,"Documentation":55.3},{"date":"20111002","Testing":58,"Coding":59.9,"Code-Review":67.7,"Documentation":55.3},{"date":"20111003","Testing":53.3,"Coding":59.1,"Code-Review":69.4,"Documentation":35.3},{"date":"20111004","Testing":55.7,"Coding":58.8,"Code-Review":68,"Documentation":25.3},{"date":"20111005","Testing":64.2,"Coding":58.7,"Code-Review":72.4,"Documentation":75.3},{"date":"20111006","Testing":58.8,"Coding":57,"Code-Review":77,"Documentation":50.3},{"date":"20111007","Testing":57.9,"Coding":56.7,"Code-Review":82.3,"Documentation":15.3},{"date":"20111008","Testing":61.8,"Coding":56.8,"Code-Review":78.9,"Documentation":48.3},{"date":"20111009","Testing":69.3,"Coding":56.7,"Code-Review":68.8,"Documentation":55.3},{"date":"20111010","Testing":71.2,"Coding":60.1,"Code-Review":68.7,"Documentation":54.3},{"date":"20111011","Testing":68.7,"Coding":61.1,"Code-Review":70.3,"Documentation":40.3},{"date":"20111012","Testing":61.8,"Coding":61.5,"Code-Review":75.3,"Documentation":99.3},{"date":"20111013","Testing":63,"Coding":64.3,"Code-Review":76.6,"Documentation":42.3},{"date":"20111014","Testing":66.9,"Coding":67.1,"Code-Review":66.6,"Documentation":50.3},{"date":"20111015","Testing":61.7,"Coding":64.6,"Code-Review":68,"Documentation":55.3},{"date":"20111016","Testing":61.8,"Coding":61.6,"Code-Review":70.6,"Documentation":35.3},{"date":"20111017","Testing":32.8,"Coding":61.1,"Code-Review":71,"Documentation":55.3}];
@@ -40,11 +40,11 @@ var data = [{"date":"20111001","Testing":63.4,"Coding":52.7,"Code-Review":72.2,"
     d.date = parseDate(d.date);
   });
 
-  var cities = color.domain().map(function(name) {
+  var activities = color.domain().map(function(name) {
     return {
       name: name,
       values: data.map(function(d) {
-        return {date: d.date, temperature: +d[name]};
+        return {date: d.date, time: +d[name]};
       })
     };
   });
@@ -52,8 +52,8 @@ var data = [{"date":"20111001","Testing":63.4,"Coding":52.7,"Code-Review":72.2,"
   x.domain(d3.extent(data, function(d) { return d.date; }));
 
   y.domain([
-    d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.temperature; }); }),
-    d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.temperature; }); })
+    d3.min(activities, function(c) { return d3.min(c.values, function(v) { return v.time; }); }),
+    d3.max(activities, function(c) { return d3.max(c.values, function(v) { return v.time; }); })
   ]);
 
   svg.append("g")
@@ -79,19 +79,19 @@ var data = [{"date":"20111001","Testing":63.4,"Coding":52.7,"Code-Review":72.2,"
       .text("Time Submitted for each activity")
       .style("font-size","25px");
 
-  var city = svg.selectAll(".city")
-      .data(cities)
+  var activity = svg.selectAll(".activity")
+      .data(activities)
     .enter().append("g")
-      .attr("class", "city");
+      .attr("class", "activity");
 
-  city.append("path")
+  activity.append("path")
       .attr("class", "line")
       .attr("d", function(d) { return line(d.values); })
       .style("stroke", function(d) { return color(d.name); });
 
-  city.append("text")
+  activity.append("text")
       .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
-      .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.temperature) + ")"; })
+      .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.time) + ")"; })
       .attr("x", 3)
       .attr("dy", ".35em")
       .text(function(d) { return d.name; });
