@@ -42,3 +42,8 @@ end
 get '/activity_var' do
   erb :activity_var
 end
+
+# Activities vs Time Spent by org. on each project
+get '/activity_vs_time' do
+  erb :activity_vs_time
+end
