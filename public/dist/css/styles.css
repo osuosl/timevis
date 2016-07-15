@@ -1,4 +1,12 @@
-body {
+.bar {
+  fill: steelblue;
+}
+
+.bar:hover {
+  fill: brown;
+}
+
+.axis {
   font: 10px sans-serif;
 }
 
@@ -17,4 +25,5 @@ body {
   fill: none;
   stroke: steelblue;
   stroke-width: 1.5px;
+  margin-left: 200pt;
 }
