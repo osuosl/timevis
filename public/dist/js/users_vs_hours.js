@@ -27,7 +27,7 @@ var line = d3.svg.line()
 
 var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("height", height + margin.top + margin.bottom + 50)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -58,7 +58,13 @@ var data = [{"date":"20111001","tschuy":63.4,"kennric":62.7,"iCHAIT":72.2},{"dat
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
+      .call(xAxis)
+      .append("text")
+      .attr("x", 50)
+      .attr("dy", "3em")
+      .attr("dx", "10em")
+      .text("Days/Months")
+      .style("font-size","25px");;
 
   svg.append("g")
       .attr("class", "y axis")
@@ -68,7 +74,8 @@ var data = [{"date":"20111001","tschuy":63.4,"kennric":62.7,"iCHAIT":72.2},{"dat
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Hours Worked");
+      .text("Time Spent")
+      .style("font-size","25px");
 
   var city = svg.selectAll(".city")
       .data(cities)
