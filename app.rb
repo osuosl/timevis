@@ -47,3 +47,8 @@ end
 get '/activity_vs_time' do
   erb :activity_vs_time
 end
+
+# Time Usage vs Life cycle of a project over months/years
+get '/life_cycle' do
+  erb :life_cycle
+end
