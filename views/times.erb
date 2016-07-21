@@ -6,6 +6,11 @@
                 <h1 class="page-header">Times</h1>
             </div>
         </div>
+        <% times.each do |time| %>
+	    <div class="list-group">
+    	      <a href="/times/<%= time['uuid']%>" class="list-group-item"><%= time['notes']%></a>
+        <% end %>
+    	</div>
     </div>
     <!-- /#page-wrapper -->
 </div>
