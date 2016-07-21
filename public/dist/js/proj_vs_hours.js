@@ -43,7 +43,7 @@ var data = [
       .attr("dy", "3em")
       .attr("dx", "10em")
       .text("Projects")
-      .style("font-size","25px");;
+      .style("font-size","25px");
 
   svg.append("g")
       .attr("class", "y axis")
