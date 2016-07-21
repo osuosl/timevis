@@ -1,17 +1,49 @@
 require 'sinatra'
 require 'rimesync'
+require 'sinatra/flash'
 
-ts = TimeSync.new(baseurl = 'http://localhost:8000/v0')
+enable :sessions
 
-ts.authenticate(username: 'ichait', password: 'passw', auth_type: 'password')
-
-p ts.token_expiration_time # token expiration time
+# p ts.token_expiration_time # token expiration time
 
 get '/' do
   erb :login, layout: false
 end
 
+post '/' do
+  ts = TimeSync.new(baseurl = 'http://localhost:8000/v0')
+  token = ts.authenticate(username: params[:username],
+                           password: params[:password],
+                           auth_type: 'password')
+  p params[:username]
+  p params[:password]
+  p token
+
+  error_message(token)
+
+  if token.key? 'rimesync error'
+    # status = token['status']
+    # p status
+    flash[:error] = 'Error'
+    redirect '/'
+    # Else success, redirect to index page
+  else
+    session['token'] = token['token']
+
+    user = ts.get_users(params[:username])
+
+    if not user
+      return 'There was an error.', 500
+    end
+
+    session['user'] = user
+
+    redirect '/home'
+  end
+end
+
 get '/home' do
+  # protected!
   erb :home
 end
 
@@ -76,4 +108,34 @@ end
 # Activities vs Time Spent by org. on each project
 get '/activity_vs_time' do
   erb :activity_vs_time
+end
+
+def error_message(array)
+  if array.is_a? Hash
+    if array.key? 'error'
+      flash[:error] = 'Error: ' + array['error'].to_s + ' - ' + array['text'].to_s
+      # There was an error
+      return true
+    elsif array.key? 'rimesync error'
+      flash[:error] = 'Error: ' + array['rimesync error'].to_s + ' - ' +
+                      array['text'].to_s
+      # There was an error
+      return true
+    end
+  elsif array.is_a? Array
+    if array[0].include? 'error'
+      flash[:error] = 'Error: ' + array[0]['error'].to_s + ' - ' +
+                      array[0]['text'].to_s
+      # There was an error
+      return true
+    elsif array.include? 'rimesync error'
+      flash[:error] = 'Error: ' + array[0]['rimesync error'].to_s + ' - ' +
+                      array[0]['text'].to_s
+      # There was an error
+      return true
+    end
+  end
+
+  # No error
+  false
 end
