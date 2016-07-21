@@ -17,7 +17,15 @@ end
 
 # get_activities
 get '/activities' do
-  erb :activities
+  erb :activities, locals: { activities: ts.get_activities }
+end
+
+get '/activities/:activity' do
+  data = []
+  ts.get_activities.each do |a|
+    data.push(a) if a['uuid'] == params['activity']
+  end
+  erb :get_values_form, locals: { values: data, header: params['activity'] }
 end
 
 # get_projects
