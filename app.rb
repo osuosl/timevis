@@ -1,4 +1,11 @@
 require 'sinatra'
+require 'rimesync'
+
+ts = TimeSync.new(baseurl = 'http://localhost:8000/v0')
+
+ts.authenticate(username: 'ichait', password: 'passw', auth_type: 'password')
+
+p ts.token_expiration_time # token expiration time
 
 get '/' do
   erb :login, layout: false
@@ -25,7 +32,15 @@ end
 
 # get_users
 get '/users' do
-  erb :users
+  erb :users, locals: { users: ts.get_users }
+end
+
+get '/users/:user' do
+  data = []
+  ts.get_users.each do |u|
+    data.push(u) if u['username'] == params['user']
+  end
+  erb :get_values_form, locals: { values: data }
 end
 
 # Visualization: Project vs Hours Worked
