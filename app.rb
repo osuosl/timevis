@@ -40,7 +40,7 @@ get '/users/:user' do
   ts.get_users.each do |u|
     data.push(u) if u['username'] == params['user']
   end
-  erb :get_values_form, locals: { values: data }
+  erb :get_values_form, locals: { values: data, user: params['user'] }
 end
 
 # Visualization: Project vs Hours Worked
