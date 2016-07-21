@@ -22,7 +22,16 @@ end
 
 # get_projects
 get '/projects' do
-  erb :projects
+  p ts.get_projects[1]
+  erb :projects, locals: { projects: ts.get_projects }
+end
+
+get '/projects/:project' do
+  data = []
+  ts.get_projects.each do |p|
+    data.push(p) if p['name'] == params['project']
+  end
+  erb :get_values_form, locals: { values: data, user: params['project'] }
 end
 
 # get_times

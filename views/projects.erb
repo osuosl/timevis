@@ -6,6 +6,11 @@
                 <h1 class="page-header">Projects</h1>
             </div>
         </div>
+            <% projects.each do |project| %>
+        	    <div class="list-group">
+        	      <a href="/projects/<%= project['name']%>" class="list-group-item"><%= project['name']%></a>
+            <% end %>
+        	    </div>
     </div>
     <!-- /#page-wrapper -->
 </div>
