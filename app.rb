@@ -138,7 +138,40 @@ end
 
 # Visualization: Project vs Hours Worked
 get '/proj_vs_hours' do
-  is_logged_in(:proj_vs_hours)
+  if logged_in
+    time_for_each_proj = {}
+    times = @ts.get_times
+    projects = @ts.get_projects
+
+    times.each do |time|
+      slug = time['project'][0]
+      name = find_project(projects, slug)
+      duration = time['duration']
+
+      # Convert all durations to seconds
+      unless duration.is_a? Integer
+        duration = @ts.duration_to_seconds(duration)
+      end
+
+      # Group these times by project names
+      if time_for_each_proj.key? name
+        time_for_each_proj[name] += duration
+      else
+        time_for_each_proj[name] = duration
+      end
+    end
+
+    # Transform time_for_each_proj into array of hashes required by d3
+    rv = []
+    time_for_each_proj.each do |name, seconds|
+      h = { 'project' => name, 'hours' => (seconds / 3600) }.to_json
+      rv.push(h)
+    end
+
+    erb :proj_vs_hours, locals: { values: rv }
+  else
+    not_logged_in
+  end
 end
 
 # Users vs Hours Worked
