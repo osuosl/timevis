@@ -31,11 +31,7 @@ get '/times' do
 end
 
 get '/times/:time' do
-  data = []
-  ts.get_times.each do |t|
-    data.push(t) if t['uuid'] == params['time']
-  end
-  erb :get_values_form, locals: { values: data, header: params['time'] }
+  erb :get_values_form, locals: { values: ts.get_times({"uuid"=> params['time']}), header: params['time'] }
 end
 
 # get_users
