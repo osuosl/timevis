@@ -60,5 +60,48 @@ end
 
 # Activities vs Time Spent by org. on each project
 get '/activity_vs_time' do
-  erb :activity_vs_time
+    data = []
+    dummy_hash = {}
+    time_for_each_act = {}
+    times = ts.get_times.group_by { |d| d["project"] }  # group entries by project slugs
+
+    times.each do |key, value|
+      if key.length == 1  # test if slug array contains single entry
+        dummy_hash.merge!(key=>value)
+      else    # slug array contains multiple entries
+        key.each do |k|
+          if dummy_hash.key? k
+            dummy_hash[k].push(value)
+          else
+            dummy_hash.merge!(k=>value)
+          end
+        end
+      end
+    end
+
+    dummy_hash.each do |k,v|
+      timing_docs = 0
+      timing_code = 0
+      timing_test = 0
+      timing_rev = 0
+      v.each do |val|
+        if val["activities"] == ["docs"]
+          timing_docs += val["duration"]
+        elsif val["activities"] == ["coding"]
+          timing_code += val["duration"]
+        elsif val["activities"] == ["coding"]
+          timing_test += val["duration"]
+        else
+          timing_rev += val["duration"]
+      end
+      time_for_each_act.merge!("Project"=>k
+                                "Testing"=>timing_test,
+                                "Coding"=>timing_code,
+                                "Code_review"=>timing_rev,
+                                "Documentation"=>timing_docs)
+    end
+
+    data.push(time_for_each_act)
+
+  erb :activity_vs_time, locals: { values: data }
 end
