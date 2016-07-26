@@ -50,6 +50,30 @@ end
 
 # Users vs Hours Worked on weekly/monthly basis
 get '/users_vs_hours' do
+  # p ts.get_users
+    time = {}
+    time_for_each_user = []
+    times = ts.get_times.group_by { |d| d["user"] }  # group entries by user
+
+    times.each do |k,v|
+      timing = 0
+      v.each do |val|
+        timing += val["duration"]   # till here we have one user and sum of all his times
+      end
+      time[k] = timing
+      # time_for_each_user.merge!(k=>timing)
+    end
+
+    # ts.get_users do |user|
+    #   if hash.key? "date"    # figure out how to make date as PK
+    #     hash[user]=>time[user]
+    #   else
+    #     h2 = {"date"=>date}
+    #     h2[user]=>time[user]
+    #     time_for_each_proj.push(h2)
+    #   end
+    # end
+
   erb :users_vs_hours
 end
 
