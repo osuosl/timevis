@@ -305,3 +305,8 @@ def check_token_expiration_timer
     redirect '/logout'
   end
 end
+
+# Time spent on each activity for all projects
+get '/time_per_activity' do
+  erb :time_per_act
+end
