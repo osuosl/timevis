@@ -13,3 +13,4 @@ def find_project_slug(projects, name)
     end
   end
 end
+
