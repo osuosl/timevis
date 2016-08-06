@@ -28,44 +28,12 @@ var svg = d3.select("#chart").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var data = [
-  {
-    "Project": "what's fresh",
-    "Testing": 8,
-    "Coding": 14,
-    "Code-Review": 2,
-    "Documentation": 7
-  },
-  {
-    "Project": "pgd",
-    "Testing": 7,
-    "Coding": 13,
-    "Code-Review": 1,
-    "Documentation": 7
-  },
-  {
-    "Project": "timesync-node",
-    "Testing": 6,
-    "Coding": 15,
-    "Code-Review": 2,
-    "Documentation": 7
-  },
-  {
-    "Project": "fenestra",
-    "Testing": 9,
-    "Coding": 13,
-    "Code-Review": 1,
-    "Documentation": 7
-  },
-  {
-    "Project": "pymesync",
-    "Testing": 8,
-    "Coding": 10,
-    "Code-Review": 2,
-    "Documentation": 7
-  }
-];
+  var data = [];
 
+  // Parse each JSON string into data
+  for (var i = 0; i <= raw_data.length - 1; i++) {
+    data.push(JSON.parse(raw_data[i]));
+  }
 
   var activities = d3.keys(data[0]).filter(function(key) { return key !== "Project"; });
 

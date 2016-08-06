@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'rimesync'
+require_relative 'utils'
 
 ts = TimeSync.new(baseurl = 'http://localhost:8000/v0')
 
@@ -60,48 +61,54 @@ end
 
 # Activities vs Time Spent by org. on each project
 get '/activity_vs_time' do
-    data = []
-    dummy_hash = {}
+
+  # TODO: Only display projects that the user has spectator permissions on
+  projects = ts.get_projects
+  activities = ts.get_activities
+  per_project = {}
+
+  projects.each do |project|
+    # These calls can be optimized
+    proj_times = ts.get_times({ "project" => [project["slugs"][0]] })
     time_for_each_act = {}
-    times = ts.get_times.group_by { |d| d["project"] }  # group entries by project slugs
 
-    times.each do |key, value|
-      if key.length == 1  # test if slug array contains single entry
-        dummy_hash.merge!(key=>value)
-      else    # slug array contains multiple entries
-        key.each do |k|
-          if dummy_hash.key? k
-            dummy_hash[k].push(value)
-          else
-            dummy_hash.merge!(k=>value)
-          end
-        end
+    proj_times.each do |time|
+      duration = time["duration"]
+
+      # Convert all durations to seconds
+      if not duration.is_a? Integer
+        duration = ts.duration_to_seconds(duration)
       end
-    end
 
-    dummy_hash.each do |k,v|
-      timing_docs = 0
-      timing_code = 0
-      timing_test = 0
-      timing_rev = 0
-      v.each do |val|
-        if val["activities"] == ["docs"]
-          timing_docs += val["duration"]
-        elsif val["activities"] == ["coding"]
-          timing_code += val["duration"]
-        elsif val["activities"] == ["coding"]
-          timing_test += val["duration"]
+      time["activities"].each do |activity|
+        name = find_activity(activities, activity)
+
+        # Group these times by activity name
+        if time_for_each_act.key? name
+          # BUG: This assumes that the time is equally divided amongst the activities
+          time_for_each_act[name] += duration / time["activities"].length
         else
-          timing_rev += val["duration"]
+          time_for_each_act[name] = duration / time["activities"].length
+        end
+
       end
-      time_for_each_act.merge!("Project"=>k
-                                "Testing"=>timing_test,
-                                "Coding"=>timing_code,
-                                "Code_review"=>timing_rev,
-                                "Documentation"=>timing_docs)
+
     end
 
-    data.push(time_for_each_act)
+    per_project[project["name"]] = time_for_each_act
+  end
 
-  erb :activity_vs_time, locals: { values: data }
+  # Transform time_for_each_act into array of hashes required by d3
+  rv = []
+  per_project.each do |name, act_hash|
+      project = { "Project" => name }
+
+      act_hash.each do |act_name, seconds|
+        project[act_name] = (seconds / 3600)
+      end
+
+      rv.push(project.to_json)
+  end
+
+  erb :activity_vs_time, locals: { values: rv }
 end
