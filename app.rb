@@ -308,5 +308,44 @@ end
 
 # Time spent on each activity for all projects
 get '/time_per_activity' do
-  erb :time_per_act
+  # TODO: Take project name from user (via forms etc.)
+  proj_name = "Streamwebs"
+
+  # TODO: Return back, if the user doesn't have spectator permissions for this project
+
+  times = ts.get_times({ "project" => [find_project_slug(ts.get_projects, proj_name)] })
+  activities = ts.get_activities
+
+  time_for_each_act = {}
+
+  times.each do |time|
+    duration = time["duration"]
+
+    # Convert all durations to seconds
+    if not duration.is_a? Integer
+      duration = ts.duration_to_seconds(duration)
+    end
+
+    time["activities"].each do |activity|
+      name = find_activity(activities, activity)
+
+      # Group these times by activity name
+      if time_for_each_act.key? name
+        # BUG: This assumes that the time is equally divided amongst the activities
+        time_for_each_act[name] += duration / time["activities"].length
+      else
+        time_for_each_act[name] = duration / time["activities"].length
+      end
+
+    end
+  end
+
+  # Transform time_for_each_act into array of hashes required by d3
+  rv = []
+  time_for_each_act.each do |name, seconds|
+      h = { "activity" => name, "hours" => (seconds / 3600) }.to_json
+      rv.push(h)
+  end
+
+  erb :time_per_act, locals: { values: rv}
 end

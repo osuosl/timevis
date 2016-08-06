@@ -15,7 +15,7 @@ var labelArc = d3.svg.arc()
 
 var pie = d3.layout.pie()
     .sort(null)
-    .value(function(d) { return d.population; });
+    .value(function(d) { return d.hours; });
 
 var svg = d3.select("#chart").append("svg")
     .attr("width", width)
@@ -23,10 +23,12 @@ var svg = d3.select("#chart").append("svg")
   .append("g")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-var data = [{"age": "<5","population": 2704659},{"age": "5-13","population": 4499890},
-            {"age": "14-17","population": 2159981},{"age": "18-24","population": 3853788},
-            {"age": "25-44","population": 14106543},{"age": "45-64","population": 8819342},
-            {"age": "≥65","population": 612463}];
+var data = [];
+
+// Parse each JSON string into data
+for (var i = 0; i <= raw_data.length - 1; i++) {
+  data.push(JSON.parse(raw_data[i]));
+}
 
 var g = svg.selectAll(".arc")
     .data(pie(data))
@@ -35,14 +37,14 @@ var g = svg.selectAll(".arc")
 
 g.append("path")
     .attr("d", arc)
-    .style("fill", function(d) { return color(d.data.age); });
+    .style("fill", function(d) { return color(d.data.activity); });
 
 g.append("text")
     .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
     .attr("dy", ".35em")
-    .text(function(d) { return d.data.age; });
+    .text(function(d) { return d.data.activity; });
 
 function type(d) {
-  d.population = +d.population;
+  d.hours = +d.hours;
   return d;
 }
