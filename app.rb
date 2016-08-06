@@ -50,31 +50,37 @@ end
 
 # Users vs Hours Worked on weekly/monthly basis
 get '/users_vs_hours' do
-  # p ts.get_users
-    time = {}
-    time_for_each_user = []
-    times = ts.get_times.group_by { |d| d["user"] }  # group entries by user
+  time_for_each_user = {}
 
-    times.each do |k,v|
-      timing = 0
-      v.each do |val|
-        timing += val["duration"]   # till here we have one user and sum of all his times
-      end
-      time[k] = timing
-      # time_for_each_user.merge!(k=>timing)
+  times = ts.get_times
+
+  # TODO: Only display the data of all users, if the current_user is site-wide admin
+
+  times.each do |time|
+    name = time["user"]
+
+    # Convert all durations to seconds
+    duration = time["duration"]
+    unless duration.is_a? Integer
+      duration = ts.duration_to_seconds(duration)
     end
 
-    # ts.get_users do |user|
-    #   if hash.key? "date"    # figure out how to make date as PK
-    #     hash[user]=>time[user]
-    #   else
-    #     h2 = {"date"=>date}
-    #     h2[user]=>time[user]
-    #     time_for_each_proj.push(h2)
-    #   end
-    # end
+    # Group these times by project names
+    if time_for_each_user.key? name
+      time_for_each_user[name] += duration
+    else
+      time_for_each_user[name] = duration
+    end
+  end
 
-  erb :users_vs_hours
+  # Transform time_for_each_user into array of hashes required by d3
+  rv = []
+  time_for_each_user.each do |name, seconds|
+      h = { "user" => name, "hours" => (seconds / 3600) }.to_json
+      rv.push(h)
+  end
+
+  erb :users_vs_hours, locals: {values: rv}
 end
 
 # Activity variation for a user over a year
