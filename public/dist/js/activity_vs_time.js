@@ -1,5 +1,5 @@
-var margin = {top: 20, right: 20, bottom: 30, left: 300},
-    width = 960 - margin.left - margin.right,
+var margin = {top: 20, right: 20, bottom: 30, left: 80},
+    width = 1100 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
 var x0 = d3.scale.ordinal()
@@ -11,7 +11,7 @@ var y = d3.scale.linear()
     .range([height, 0]);
 
 var color = d3.scale.ordinal()
-     .range(["black", "darkblue","#ff7232", "#ffcb00"]);
+     .range(["black", "darkblue","#ff7232", "#ffcb00", "#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
 var xAxis = d3.svg.axis()
     .scale(x0)
@@ -51,7 +51,7 @@ var svg = d3.select("#chart").append("svg")
       .call(xAxis).append("text")
       .attr("x", 50)
       .attr("dy", "3em")
-      .attr("dx", "9em")
+      .attr("dx", "13em")
       .text("Projects")
       .style("font-size","25px");
 
@@ -61,7 +61,7 @@ var svg = d3.select("#chart").append("svg")
     .append("text")
       .attr("y", 6)
       .attr("dy", "9em")
-      .attr("dx", "-3em")
+      .attr("dx", "4em")
       .style("text-anchor", "end")
       .text("Hours Spent").style("font-size","25px");
 
