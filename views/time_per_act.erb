@@ -4,8 +4,12 @@
           <h1 class="page-header">Time Spent on each activity for all Projects</h1>
       </div>
   </div>
-	<script language=javascript> var raw_data = <%= values %></script>
-    <div id="chart"></div>
+  <form action="/time_per_activity_post", method="post">
+    <select class="selectpicker" name="pick_a_project">
+      <% values.each do |project| %>
+        <option value=<%= project['name']%>><%= project['name']%></option>
+      <% end %>
+    </select>
+    <input type="submit" class="btn" value="Submit">
+  </form>
 </div>
-
-<script src="dist/js/time_per_act.js"></script>
