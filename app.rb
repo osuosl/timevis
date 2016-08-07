@@ -306,12 +306,16 @@ def check_token_expiration_timer
   end
 end
 
-# Time spent on each activity for all projects
 get '/time_per_activity' do
-  # TODO: Take project name from user (via forms etc.)
-  proj_name = "Streamwebs"
+  # TODO: GET only those projects that user has
+  # atleast spectator permissions for
+  rv = ts.get_projects
+  erb :time_per_act, locals: { values: rv}
+end
 
-  # TODO: Return back, if the user doesn't have spectator permissions for this project
+# Time spent on each activity for all projects
+post '/time_per_activity_post' do
+  proj_name = params[:pick_a_project]
 
   times = ts.get_times({ "project" => [find_project_slug(ts.get_projects, proj_name)] })
   activities = ts.get_activities
@@ -347,5 +351,5 @@ get '/time_per_activity' do
       rv.push(h)
   end
 
-  erb :time_per_act, locals: { values: rv}
+  erb :time_per_act_post, locals: { values: rv}
 end
