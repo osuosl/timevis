@@ -135,17 +135,22 @@ end
 
 # Visualization: Project vs Hours Worked
 get '/proj_vs_hours' do
-  erb :proj_vs_hours
+  is_logged_in(:proj_vs_hours)
 end
 
 # Users vs Hours Worked on weekly/monthly basis
 get '/users_vs_hours' do
-  erb :users_vs_hours
+  is_logged_in(:users_vs_hours)
+end
+
+# Activity variation for a user over a year
+get '/activity_var' do
+  is_logged_in(:activity_var)
 end
 
 # Activities vs Time Spent by org. on each project
 get '/activity_vs_time' do
-  erb :activity_vs_time
+  is_logged_in(:activity_vs_time)
 end
 
 not_found do
@@ -185,8 +190,7 @@ end
 
 def logged_in
   if session.key? 'user'
-    @ts = TimeSync.new(baseurl = 'http://localhost:8000/v0',
-                       token = session['token'])
+    @ts = TimeSync.new(baseurl='http://localhost:8000/v0',token=session['token'])
     return true
   else
     return false
