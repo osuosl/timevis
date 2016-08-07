@@ -1,4 +1,4 @@
-var margin = {top: 20, right: 20, bottom: 30, left: 80},
+var margin = {top: 30, right: 20, bottom: 30, left: 50},
     width = 1100 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -10,8 +10,10 @@ var x1 = d3.scale.ordinal();
 var y = d3.scale.linear()
     .range([height, 0]);
 
+// add a distinct color code if number of distinct activities in API increases (currently 18)
 var color = d3.scale.ordinal()
-     .range(["black", "darkblue","#ff7232", "#ffcb00", "#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+     .range(["black", "darkblue","#ff7232", "#ffcb00", "#800080", "#FF00FF", "#000080", "#0000FF", "#008080",
+             "#00FFFF", "#008000", "#00FF00", "#808000", "#800000", "#FF0000", "#808080", "#C0C0C0", "#CD5C5C"]);
 
 var xAxis = d3.svg.axis()
     .scale(x0)
@@ -59,9 +61,9 @@ var svg = d3.select("#chart").append("svg")
       .attr("class", "y axis")
       .call(yAxis)
     .append("text")
+     .attr("transform", "rotate(-90)")
       .attr("y", 6)
-      .attr("dy", "9em")
-      .attr("dx", "4em")
+      .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text("Hours Spent").style("font-size","25px");
 
@@ -73,7 +75,7 @@ var svg = d3.select("#chart").append("svg")
 
   Project.selectAll("rect")
       .data(function(d) { return d.ages; })
-    .enter().append("rect")
+      .enter().append("rect")
       .attr("width", x1.rangeBand())
       .attr("x", function(d) { return x1(d.name); })
       .attr("y", function(d) { return y(d.value); })
@@ -82,9 +84,9 @@ var svg = d3.select("#chart").append("svg")
 
   var legend = svg.selectAll(".legend")
       .data(activities.slice().reverse())
-    .enter().append("g")
+      .enter().append("g")
       .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+      .attr("transform", function(d, i) { return "translate(0," + i * 15 + ")"; });
 
   legend.append("rect")
       .attr("x", width - 18)

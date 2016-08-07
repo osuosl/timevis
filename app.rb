@@ -101,13 +101,25 @@ get '/activity_vs_time' do
   # Transform time_for_each_act into array of hashes required by d3
   rv = []
   per_project.each do |name, act_hash|
+    # consider only those projects
+    # for which atleast one time entry exists
+    unless act_hash.empty?
+      p act_hash
       project = { "Project" => name }
+      unless act_hash.empty?
+        act_hash.each do |act_name, seconds|
+          project[act_name] = (seconds / 3600)
+        end
+      end
 
-      act_hash.each do |act_name, seconds|
-        project[act_name] = (seconds / 3600)
+      ts.get_activities.each do |act|
+        unless project.key? act['name']
+          project[act['name']] = 0
+        end
       end
 
       rv.push(project.to_json)
+    end
   end
 
   erb :activity_vs_time, locals: { values: rv }
