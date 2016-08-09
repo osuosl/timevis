@@ -25,6 +25,13 @@ var svg = d3.select("#chart").append("svg")
     .append("g")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
+
+var tooltip = d3.select("#chart")
+    .append("div")
+    .style("position", "absolute")
+    .style("visibility", "hidden")
+    .text("a simple tooltip");
+
 var data = [];
 
 // Parse each JSON string into data
@@ -33,9 +40,11 @@ for (var i = 0; i <= raw_data.length - 1; i++) {
 }
 
 var g = svg.selectAll(".arc")
-    .data(pie(data))
-  .enter().append("g")
-    .attr("class", "arc");
+        .data(pie(data))
+        .enter().append("g")
+        .attr("class", "arc")
+        .on("mouseover", function(d){return tooltip.style("visibility", "visible") && tooltip.text(d.data.activity);})
+        .on("mouseout", function(){return tooltip.style("visibility", "hidden");});;
 
 g.append("path")
     .attr("d", arc)
@@ -45,6 +54,7 @@ g.append("text")
     .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
     .attr("dy", ".35em")
     .text(function(d) { return d.data.hours; });
+
 
 function type(d) {
   d.hours = +d.hours;
