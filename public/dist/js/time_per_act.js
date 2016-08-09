@@ -2,8 +2,10 @@ var width = 960,
     height = 500,
     radius = Math.min(width, height) / 2;
 
+// add a distinct color code if number of distinct activities in API increases (currently 18)
 var color = d3.scale.ordinal()
-    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+    .range(["#1ABC9C", "darkblue","#ff7232", "#ffcb00", "#800080", "#FF00FF", "#000080", "#0000FF", "#008080",
+            "#00FFFF", "#008000", "#00FF00", "#808000", "#800000", "#FF0000", "#808080", "#C0C0C0", "#CD5C5C"]);
 
 var arc = d3.svg.arc()
     .outerRadius(radius - 10)
@@ -37,12 +39,12 @@ var g = svg.selectAll(".arc")
 
 g.append("path")
     .attr("d", arc)
-    .style("fill", function(d) { return color(d.data.activity); });
+    .style("fill", function(d) { return color(d.data.hours); });
 
 g.append("text")
     .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
     .attr("dy", ".35em")
-    .text(function(d) { return d.data.activity; });
+    .text(function(d) { return d.data.hours; });
 
 function type(d) {
   d.hours = +d.hours;

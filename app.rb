@@ -344,12 +344,20 @@ post '/time_per_activity_post' do
     end
   end
 
-  # Transform time_for_each_act into array of hashes required by d3
-  rv = []
-  time_for_each_act.each do |name, seconds|
-      h = { "activity" => name, "hours" => (seconds / 3600) }.to_json
-      rv.push(h)
-  end
+  # p time_for_each_act
+  # p time_for_each_act.empty?
 
-  erb :time_per_act_post, locals: { values: rv}
+  if time_for_each_act.empty?
+    flash[:error] = "Selected project does not have any time entry for it, please choose a different project!!"
+    p flash[:error]
+    erb :time_per_act_post, locals: { values: {}}
+  else
+    # Transform time_for_each_act into array of hashes required by d3
+    rv = []
+    time_for_each_act.each do |name, seconds|
+        h = { "activity" => name, "hours" => (seconds / 3600) }.to_json
+        rv.push(h)
+    end
+    erb :time_per_act_post, locals: { values: rv}
+  end
 end
