@@ -12,15 +12,10 @@ Development Docs
   Developer Guide <dev/development>
   Usage Guide <dev/usage>
 
-Libraries
----------
+Design
+-------
 .. toctree::
   :maxdepth: 2
 
-  Libraries <libraries>
-
-Visualizations
-------------------
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+  Visualizations <design/visualizations>
+  Libraries <design/libraries>
