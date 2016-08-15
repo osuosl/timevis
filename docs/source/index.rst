@@ -2,7 +2,9 @@
 
 Welcome to TimeVis's documentation!
 =========================================
-TimeSync is an OSU Open Source Lab developed Time Tracking system.
+
+TimeVis is a ruby application for Timesync Visualizations and basic implementation of the rimesync gem.
+
 
 Development Docs
 ----------------
