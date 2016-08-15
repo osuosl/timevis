@@ -61,41 +61,35 @@ end
 
 # Activities vs Time Spent by org. on each project
 get '/activity_vs_time' do
-
-  # TODO: Only display projects that the user has spectator permissions on
   projects = ts.get_projects
   activities = ts.get_activities
   per_project = {}
 
   projects.each do |project|
     # These calls can be optimized
-    proj_times = ts.get_times({ "project" => [project["slugs"][0]] })
+    proj_times = ts.get_times({ 'project' => [project['slugs'][0]] })
     time_for_each_act = {}
 
     proj_times.each do |time|
-      duration = time["duration"]
+      duration = time['duration']
 
       # Convert all durations to seconds
-      if not duration.is_a? Integer
+      unless duration.is_a? Integer
         duration = ts.duration_to_seconds(duration)
       end
 
-      time["activities"].each do |activity|
+      time['activities'].each do |activity|
         name = find_activity(activities, activity)
 
         # Group these times by activity name
         if time_for_each_act.key? name
-          # BUG: This assumes that the time is equally divided amongst the activities
-          time_for_each_act[name] += duration / time["activities"].length
+          time_for_each_act[name] += duration
         else
-          time_for_each_act[name] = duration / time["activities"].length
+          time_for_each_act[name] = duration
         end
-
       end
-
     end
-
-    per_project[project["name"]] = time_for_each_act
+    per_project[project['name']] = time_for_each_act
   end
 
   # Transform time_for_each_act into array of hashes required by d3
@@ -104,8 +98,7 @@ get '/activity_vs_time' do
     # consider only those projects
     # for which atleast one time entry exists
     unless act_hash.empty?
-      p act_hash
-      project = { "Project" => name }
+      project = { 'Project' => name }
       unless act_hash.empty?
         act_hash.each do |act_name, seconds|
           project[act_name] = (seconds / 3600)
