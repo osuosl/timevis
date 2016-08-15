@@ -85,8 +85,7 @@ Code standards
 
 The TimeVis source code is linted using `RuboCop`_. This helps keep the code
 base cleaner and more readable. For the most part, if an error occurs, it is
-straightforward to fix it. For reference, a full list of messages is available
-in the `JSHint source code`_.
+straightforward to fix it.
 
 To run the linter, just run::
 

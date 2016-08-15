@@ -1,6 +1,6 @@
 .. _timevis-docs:
 
-Welcome to TimeVis's documentation!
+Welcome to TimeVis documentation!
 =========================================
 
 TimeVis is a ruby application for Timesync Visualizations and basic implementation of the rimesync gem.

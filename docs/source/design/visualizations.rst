@@ -9,14 +9,14 @@ library.
 
 The visualizations that are currently covered in TimeVis are -
 
-- `Projects Vs Hours Worked`_
-- `Users Vs Hours Worked`_
-- `Time spent by organization on different activities over all projects`_
-- `Time spent per activity for each project`_
+- Projects Vs Hours Worked
+- Users Vs Hours Worked
+- Time spent by organization on different activities over all projects
+- Time spent per activity for each project
 
 
-.. _`Project Vs Hours Worked`
-----------------------------
+Project Vs Hours Worked
+------------------------
 
 
 - X axis -­ All OSUOSL projects.
@@ -25,8 +25,6 @@ The visualizations that are currently covered in TimeVis are -
 
 This visualization will allow us to identify which project takes up most of our time,
 and also determine which projects are lagging behind and need our attention.
-
-A live demo of the visualization is available here_.
 
 .. note::
   The demo graph shown in the example uses dummy data set.
@@ -53,11 +51,9 @@ should see the chart.
   You'll only see data for those projects for which you have atleast
   spectator permissions for.
 
-.. _here -  ­http://bl.ocks.org/iCHAIT/10986ac3f8172a6344e5
 
-
-.. _`Users Vs Hours Worked`
-----------------------------
+Users Vs Hours Worked
+----------------------
 
 
 - X axis ­ Days or Months ( eg. Mon,Tue.....Sun or Jan,Feb ....Dec )
@@ -88,8 +84,8 @@ should see the chart.
   otherwise you'll see data for only yourself.
 
 
-.. _`Time spent by organization on different activities over all projects`
-----------------------------
+Time spent by organization on different activities over all projects
+--------------------------------------------------------------------
 
 
 - X axis -­ All OSL projects.
@@ -125,8 +121,8 @@ should see the chart.
   otherwise you'll see data for the projects you have at least spectator permissions
   for.
 
-.. _`Time spent per activity for each project`
-----------------------------
+Time spent per activity for each project
+----------------------------------------
 
 
 This visualization constitues a pie chart, which is a graphical representation
