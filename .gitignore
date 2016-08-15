@@ -21,3 +21,6 @@
 
 # bower
 public/bower_components/
+
+# docs
+build/
