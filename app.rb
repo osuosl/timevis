@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'rimesync'
+require 'json'
 
 ts = TimeSync.new(baseurl = 'http://localhost:8000/v0')
 
@@ -51,16 +52,13 @@ end
 # Users vs Hours Worked on weekly/monthly basis
 get '/users_vs_hours' do
   time_for_each_user = {}
-
   times = ts.get_times
 
-  # TODO: Only display the data of all users, if the current_user is site-wide admin
-
   times.each do |time|
-    name = time["user"]
+    name = time['user']
 
     # Convert all durations to seconds
-    duration = time["duration"]
+    duration = time['duration']
     unless duration.is_a? Integer
       duration = ts.duration_to_seconds(duration)
     end
@@ -76,11 +74,11 @@ get '/users_vs_hours' do
   # Transform time_for_each_user into array of hashes required by d3
   rv = []
   time_for_each_user.each do |name, seconds|
-      h = { "user" => name, "hours" => (seconds / 3600) }.to_json
-      rv.push(h)
+    h = { 'user' => name, 'hours' => (seconds / 3600) }.to_json
+    rv.push(h)
   end
 
-  erb :users_vs_hours, locals: {values: rv}
+  erb :users_vs_hours, locals: { values: rv }
 end
 
 # Activity variation for a user over a year
