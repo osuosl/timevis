@@ -8,8 +8,8 @@ end
 
 def find_project_slug(projects, name)
   projects.each do |project|
-	if project["name"] == name
-      return project["slugs"][0]
-	end
+    if project['name'] == name
+      return project['slugs'][0]
+    end
   end
 end

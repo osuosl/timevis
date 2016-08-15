@@ -307,57 +307,53 @@ def check_token_expiration_timer
 end
 
 get '/time_per_activity' do
-  # TODO: GET only those projects that user has
-  # atleast spectator permissions for
   rv = ts.get_projects
-  erb :time_per_act, locals: { values: rv}
+  erb :time_per_act, locals: { values: rv }
 end
 
 # Time spent on each activity for all projects
 post '/time_per_activity_post' do
   proj_name = params[:pick_a_project]
 
-  times = ts.get_times({ "project" => [find_project_slug(ts.get_projects, proj_name)] })
+  times = ts.get_times({ 'project' =>
+                         [find_project_slug(ts.get_projects, proj_name)] })
   activities = ts.get_activities
 
   time_for_each_act = {}
 
   times.each do |time|
-    duration = time["duration"]
+    duration = time['duration']
 
     # Convert all durations to seconds
-    if not duration.is_a? Integer
+    unless duration.is_a? Integer
       duration = ts.duration_to_seconds(duration)
     end
 
-    time["activities"].each do |activity|
+    time['activities'].each do |activity|
       name = find_activity(activities, activity)
 
       # Group these times by activity name
       if time_for_each_act.key? name
-        # BUG: This assumes that the time is equally divided amongst the activities
-        time_for_each_act[name] += duration / time["activities"].length
+        time_for_each_act[name] += duration
       else
-        time_for_each_act[name] = duration / time["activities"].length
+        time_for_each_act[name] = duration
       end
 
     end
   end
 
-  # p time_for_each_act
-  # p time_for_each_act.empty?
-
   if time_for_each_act.empty?
-    flash[:error] = "Selected project does not have any time entry for it, please choose a different project!!"
+    flash[:error] = 'Selected project does not have any time entry for it,
+                     please choose a different project!!'
     p flash[:error]
-    erb :time_per_act_post, locals: { values: {}}
+    erb :time_per_act_post, locals: { values: {} }
   else
     # Transform time_for_each_act into array of hashes required by d3
     rv = []
     time_for_each_act.each do |name, seconds|
-        h = { "activity" => name, "hours" => (seconds / 3600) }.to_json
-        rv.push(h)
+      h = { 'activity' => name, 'hours' => (seconds / 3600) }.to_json
+      rv.push(h)
     end
-    erb :time_per_act_post, locals: { values: rv}
+    erb :time_per_act_post, locals: { values: rv }
   end
 end
