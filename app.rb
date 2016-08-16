@@ -354,6 +354,6 @@ post '/time_per_activity_post' do
       h = { 'activity' => name, 'hours' => (seconds / 3600) }.to_json
       rv.push(h)
     end
-    erb :time_per_act_post, locals: { values: rv }
+    erb :time_per_act_post, locals: { values: rv, project: proj_name }
   end
 end
