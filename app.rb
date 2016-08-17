@@ -27,7 +27,12 @@ end
 
 # get_times
 get '/times' do
-  erb :times
+  times = ts.get_times.sort_by { |k| k["date_worked"] }
+  erb :times, locals: { times: times }
+end
+
+get '/times/:time' do
+  erb :get_values_form, locals: { values: ts.get_times({"uuid"=> params['time']}), header: params['time'] }
 end
 
 # get_users
@@ -40,7 +45,7 @@ get '/users/:user' do
   ts.get_users.each do |u|
     data.push(u) if u['username'] == params['user']
   end
-  erb :get_values_form, locals: { values: data, user: params['user'] }
+  erb :get_values_form, locals: { values: data, header: params['user'] }
 end
 
 # Visualization: Project vs Hours Worked
