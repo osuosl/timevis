@@ -27,7 +27,8 @@ end
 
 # get_times
 get '/times' do
-  erb :times, locals: { times: ts.get_times }
+  times = ts.get_times.sort_by { |k| k["date_worked"] }
+  erb :times, locals: { times: times }
 end
 
 get '/times/:time' do
