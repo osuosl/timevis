@@ -8,24 +8,28 @@
         </div>
         <div class="col-lg-6">
            <form role="form">
- 			<% values.each do |val| %>
- 				<% val.each do |k, v| %>
-	               <fieldset disabled>
-	                   <div class="form-group">
-	                       <label for="disabledSelect"><%= k %></label>
+      <% values.each do |val| %>
+        <% val.each do |k, v| %>
+                 <fieldset disabled>
+                     <div class="form-group">
+                         <label for="disabledSelect"><%= k %></label>
                            <% if v.kind_of?(Array) %>
                               <% v.each do |varray| %>
-    	                       <input class="form-control" id="disabledInput" type="text" placeholder="<%= varray %>" disabled>
+                             <input class="form-control" id="disabledInput" type="text" placeholder="<%= varray %>" disabled>
                                <% end %>
                             <% else %>
+                              <% if k.eql? 'users'%>
+                                <input class="form-control" id="disabledInput" type="text" placeholder="<%= users %>" disabled>
+                              <% else %>
                                 <input class="form-control" id="disabledInput" type="text" placeholder="<%= v %>" disabled>
+                              <% end %>
                             <% end %>
-	                   </div>
-	               </fieldset>
-             	<% end %>
+                     </div>
+                 </fieldset>
+              <% end %>
              <% end %>
            </form>
-	   </div>
+     </div>
     </div>
     <!-- /#page-wrapper -->
 </div>
