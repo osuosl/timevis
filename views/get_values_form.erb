@@ -18,7 +18,11 @@
                              <input class="form-control" id="disabledInput" type="text" placeholder="<%= varray %>" disabled>
                                <% end %>
                             <% else %>
+                              <% if k.eql? 'users'%>
+                                <input class="form-control" id="disabledInput" type="text" placeholder="<%= users %>" disabled>
+                              <% else %>
                                 <input class="form-control" id="disabledInput" type="text" placeholder="<%= v %>" disabled>
+                              <% end %>
                             <% end %>
                      </div>
                  </fieldset>
