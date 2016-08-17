@@ -8,7 +8,7 @@
         </div>
         <% times.each do |time| %>
 	    <div class="list-group">
-    	      <a href="/times/<%= time['uuid']%>" class="list-group-item"><%= time['notes']%></a>
+    	      <a href="/times/<%= time['uuid'] %>" class="list-group-item"><%= time['user'] %> <b>submitted: </b><%= time['duration'] %> <b> to: </b><%= time['project'][0] %><b> on: </b><%= time['date_worked'] %></a>
         <% end %>
     	</div>
     </div>
