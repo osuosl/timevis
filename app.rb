@@ -17,7 +17,11 @@ end
 
 # get_activities
 get '/activities' do
-  erb :activities
+  erb :activities, locals: { activities: ts.get_activities }
+end
+
+get '/activities/:activity' do
+  erb :get_values_form, locals: { values: ts.get_activities({"slug"=> params['activity']}), header: params['activity'] }
 end
 
 # get_projects
