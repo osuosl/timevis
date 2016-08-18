@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'rimesync'
+require 'json'
 require 'sinatra/flash'
 
 enable :sessions
@@ -138,9 +139,40 @@ get '/proj_vs_hours' do
   is_logged_in(:proj_vs_hours)
 end
 
-# Users vs Hours Worked on weekly/monthly basis
+# Users vs Hours Worked
 get '/users_vs_hours' do
-  is_logged_in(:users_vs_hours)
+  if logged_in
+    time_for_each_user = {}
+    times = @ts.get_times
+
+    times.each do |time|
+      name = time['user']
+
+      # Convert all durations to seconds
+      duration = time['duration']
+      unless duration.is_a? Integer
+        duration = ts.duration_to_seconds(duration)
+      end
+
+      # Group these times by project names
+      if time_for_each_user.key? name
+        time_for_each_user[name] += duration
+      else
+        time_for_each_user[name] = duration
+      end
+    end
+
+    # Transform time_for_each_user into array of hashes required by d3
+    rv = []
+    time_for_each_user.each do |name, seconds|
+      h = { 'user' => name, 'hours' => (seconds / 3600) }.to_json
+      rv.push(h)
+    end
+
+    erb :users_vs_hours, locals: { values: rv }
+  else
+    not_logged_in
+  end
 end
 
 # Activity variation for a user over a year
