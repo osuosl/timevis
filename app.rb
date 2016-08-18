@@ -1,119 +1,294 @@
 require 'sinatra'
 require 'rimesync'
 require_relative 'utils'
+require 'json'
+require 'sinatra/flash'
 
-ts = TimeSync.new(baseurl = 'http://localhost:8000/v0')
-
-ts.authenticate(username: 'ichait', password: 'passw', auth_type: 'password')
-
-p ts.token_expiration_time # token expiration time
+enable :sessions
 
 get '/' do
   erb :login, layout: false
 end
 
+post '/' do
+  ts = TimeSync.new(baseurl = 'http://localhost:8000/v0')
+  token = ts.authenticate(username: params[:username],
+                          password: params[:password],
+                          auth_type: 'password')
+
+  # If no error, proceed
+  unless error_message(token)
+    session['token'] = token['token']
+    user = ts.get_users(params[:username])
+
+    unless user
+      return 'There was an error.', 500
+    end
+
+    session['user'] = user
+
+    redirect '/home'
+  else
+    redirect '/'
+  end
+end
+
 get '/home' do
-  erb :home
+  is_logged_in(:home)
+end
+
+get '/logout' do
+  if session.key? 'user'
+    session.delete('user')
+  end
+
+  if session.key? 'token'
+    session.delete('token')
+  end
+
+  flash[:info] = "You've been logged out."
+  redirect '/'
 end
 
 # get_activities
 get '/activities' do
-  erb :activities
+  if logged_in
+    erb :activities, locals: { activities: @ts.get_activities }
+  else
+    not_logged_in
+  end
+end
+
+get '/activities/:activity' do
+  if logged_in
+    erb :get_values_form, locals: { values: @ts.get_activities({ 'slug' => params['activity'] }),
+                                    header: params['activity'] }
+  else
+    not_logged_in
+  end
 end
 
 # get_projects
 get '/projects' do
-  erb :projects
+  if logged_in
+    erb :projects, locals: { projects: @ts.get_projects }
+  else
+    not_logged_in
+  end
+end
+
+get '/projects/:project' do
+  if logged_in
+    data = []
+    users = []
+
+    @ts.get_projects.each do |p|
+      data.push(p) if p['name'] == params['project']
+    end
+
+    data.each do |d|
+      users = d['users'].keys
+    end
+    users = users.join(',')
+    erb :get_values_form, locals: { values: data, header: params['project'],
+                                    users: users }
+  else
+    not_logged_in
+  end
 end
 
 # get_times
 get '/times' do
-  erb :times
+  if logged_in
+    times = @ts.get_times.sort_by { |k| k['date_worked'] }
+    erb :times, locals: { times: times }
+  else
+    not_logged_in
+  end
+end
+
+get '/times/:time' do
+  if logged_in
+    erb :get_values_form, locals: { values: @ts.get_times({ 'uuid' => params['time'] }),
+                                    header: params['time'] }
+  else
+    not_logged_in
+  end
 end
 
 # get_users
 get '/users' do
-  erb :users, locals: { users: ts.get_users }
+  # ts = TimeSync.new(baseurl='http://localhost:8000/v0',token=session['token'])
+  if logged_in
+    erb :users, locals: { users: @ts.get_users }
+  else
+    not_logged_in
+  end
 end
 
 get '/users/:user' do
-  data = []
-  ts.get_users.each do |u|
-    data.push(u) if u['username'] == params['user']
+  if logged_in
+    erb :get_values_form, locals: { values: @ts.get_users(params['user']),
+                                    header: params['user'] }
+  else
+    not_logged_in
   end
-  erb :get_values_form, locals: { values: data, user: params['user'] }
 end
 
 # Visualization: Project vs Hours Worked
 get '/proj_vs_hours' do
-  erb :proj_vs_hours
+  is_logged_in(:proj_vs_hours)
 end
 
-# Users vs Hours Worked on weekly/monthly basis
+# Users vs Hours Worked
 get '/users_vs_hours' do
-  erb :users_vs_hours
-end
+  if logged_in
+    time_for_each_user = {}
+    times = @ts.get_times
 
-# Activity variation for a user over a year
-get '/activity_var' do
-  erb :activity_var
-end
-
-# Activities vs Time Spent by org. on each project
-get '/activity_vs_time' do
-  projects = ts.get_projects
-  activities = ts.get_activities
-  per_project = {}
-
-  projects.each do |project|
-    # These calls can be optimized
-    proj_times = ts.get_times({ 'project' => [project['slugs'][0]] })
-    time_for_each_act = {}
-
-    proj_times.each do |time|
-      duration = time['duration']
+    times.each do |time|
+      name = time['user']
 
       # Convert all durations to seconds
+      duration = time['duration']
       unless duration.is_a? Integer
         duration = ts.duration_to_seconds(duration)
       end
 
-      time['activities'].each do |activity|
-        name = find_activity(activities, activity)
-
-        # Group these times by activity name
-        if time_for_each_act.key? name
-          time_for_each_act[name] += duration
-        else
-          time_for_each_act[name] = duration
-        end
+      # Group these times by project names
+      if time_for_each_user.key? name
+        time_for_each_user[name] += duration
+      else
+        time_for_each_user[name] = duration
       end
     end
-    per_project[project['name']] = time_for_each_act
-  end
 
-  # Transform time_for_each_act into array of hashes required by d3
-  rv = []
-  per_project.each do |name, act_hash|
-    # consider only those projects
-    # for which atleast one time entry exists
-    unless act_hash.empty?
-      project = { 'Project' => name }
+    # Transform time_for_each_user into array of hashes required by d3
+    rv = []
+    time_for_each_user.each do |name, seconds|
+      h = { 'user' => name, 'hours' => (seconds / 3600) }.to_json
+      rv.push(h)
+    end
+
+    erb :users_vs_hours, locals: { values: rv }
+  else
+    not_logged_in
+  end
+end
+
+# Activity variation for a user over a year
+get '/activity_var' do
+  is_logged_in(:activity_var)
+end
+
+# Activities vs Time Spent by org. on each project
+get '/activity_vs_time' do
+  if logged_in
+    projects = @ts.get_projects
+    activities = @ts.get_activities
+    per_project = {}
+
+    projects.each do |project|
+      # These calls can be optimized
+      proj_times = @ts.get_times({ 'project' => [project['slugs'][0]] })
+      time_for_each_act = {}
+
+      proj_times.each do |time|
+        duration = time['duration']
+
+        # Convert all durations to seconds
+        unless duration.is_a? Integer
+          duration = @ts.duration_to_seconds(duration)
+        end
+
+        time['activities'].each do |activity|
+          name = find_activity(activities, activity)
+
+          # Group these times by activity name
+          if time_for_each_act.key? name
+            time_for_each_act[name] += duration
+          else
+            time_for_each_act[name] = duration
+          end
+        end
+      end
+      per_project[project['name']] = time_for_each_act
+    end
+
+    # Transform time_for_each_act into array of hashes required by d3
+    rv = []
+    per_project.each do |name, act_hash|
+      # consider only those projects
+      # for which atleast one time entry exists
       unless act_hash.empty?
-        act_hash.each do |act_name, seconds|
-          project[act_name] = (seconds / 3600)
+        project = { 'Project' => name }
+        unless act_hash.empty?
+          act_hash.each do |act_name, seconds|
+            project[act_name] = (seconds / 3600)
+          end
         end
-      end
 
-      ts.get_activities.each do |act|
-        unless project.key? act['name']
-          project[act['name']] = 0
+        @ts.get_activities.each do |act|
+          unless project.key? act['name']
+            project[act['name']] = 0
+          end
         end
-      end
 
-      rv.push(project.to_json)
+        rv.push(project.to_json)
+      end
     end
+
+    erb :activity_vs_time, locals: { values: rv }
+  else
+    not_logged_in
+  end
+end
+
+not_found do
+  status 404
+end
+
+def error_message(obj)
+  # obj is empty, no error
+  unless obj
+    return false
   end
 
-  erb :activity_vs_time, locals: { values: rv }
+  # Make sure obj is hash
+  obj = obj if obj.is_a? Hash else obj[0]
+
+  if obj.key? 'error'
+    flash[:error] = obj['error'] + ' - ' + obj['text']
+    # There was an error
+    return true
+  elsif obj.key? 'rimesync error'
+    flash[:error] = obj['rimesync error'].to_s
+    # There was an error
+    return true
+  end
+ # No error
+ return false
+end
+
+def is_logged_in(obj)
+  if session.key? 'user'
+    erb obj
+  else
+    flash[:info] = 'You should be logged in to access this page.'
+    redirect '/'
+  end
+end
+
+def logged_in
+  if session.key? 'user'
+    @ts = TimeSync.new(baseurl='http://localhost:8000/v0',token=session['token'])
+    return true
+  else
+    return false
+  end
+end
+
+def not_logged_in
+  flash[:info] = 'You should be logged in to access this page.'
+  redirect '/'
 end
