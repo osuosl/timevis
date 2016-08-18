@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'rimesync'
+require_relative 'utils'
 require 'json'
 require 'sinatra/flash'
 
@@ -182,7 +183,65 @@ end
 
 # Activities vs Time Spent by org. on each project
 get '/activity_vs_time' do
-  is_logged_in(:activity_vs_time)
+  if logged_in
+    projects = @ts.get_projects
+    activities = @ts.get_activities
+    per_project = {}
+
+    projects.each do |project|
+      # These calls can be optimized
+      proj_times = @ts.get_times({ 'project' => [project['slugs'][0]] })
+      time_for_each_act = {}
+
+      proj_times.each do |time|
+        duration = time['duration']
+
+        # Convert all durations to seconds
+        unless duration.is_a? Integer
+          duration = @ts.duration_to_seconds(duration)
+        end
+
+        time['activities'].each do |activity|
+          name = find_activity(activities, activity)
+
+          # Group these times by activity name
+          if time_for_each_act.key? name
+            time_for_each_act[name] += duration
+          else
+            time_for_each_act[name] = duration
+          end
+        end
+      end
+      per_project[project['name']] = time_for_each_act
+    end
+
+    # Transform time_for_each_act into array of hashes required by d3
+    rv = []
+    per_project.each do |name, act_hash|
+      # consider only those projects
+      # for which atleast one time entry exists
+      unless act_hash.empty?
+        project = { 'Project' => name }
+        unless act_hash.empty?
+          act_hash.each do |act_name, seconds|
+            project[act_name] = (seconds / 3600)
+          end
+        end
+
+        @ts.get_activities.each do |act|
+          unless project.key? act['name']
+            project[act['name']] = 0
+          end
+        end
+
+        rv.push(project.to_json)
+      end
+    end
+
+    erb :activity_vs_time, locals: { values: rv }
+  else
+    not_logged_in
+  end
 end
 
 not_found do

@@ -1,5 +1,5 @@
-var margin = {top: 20, right: 20, bottom: 30, left: 300},
-    width = 960 - margin.left - margin.right,
+var margin = {top: 30, right: 20, bottom: 30, left: 50},
+    width = 1100 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
 var x0 = d3.scale.ordinal()
@@ -10,8 +10,10 @@ var x1 = d3.scale.ordinal();
 var y = d3.scale.linear()
     .range([height, 0]);
 
+// add a distinct color code if number of distinct activities in API increases (currently 18)
 var color = d3.scale.ordinal()
-     .range(["black", "darkblue","#ff7232", "#ffcb00"]);
+     .range(["black", "darkblue","#ff7232", "#ffcb00", "#800080", "#FF00FF", "#000080", "#0000FF", "#008080",
+             "#00FFFF", "#008000", "#00FF00", "#808000", "#800000", "#FF0000", "#808080", "#C0C0C0", "#CD5C5C"]);
 
 var xAxis = d3.svg.axis()
     .scale(x0)
@@ -28,44 +30,12 @@ var svg = d3.select("#chart").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var data = [
-  {
-    "Project": "what's fresh",
-    "Testing": 8,
-    "Coding": 14,
-    "Code-Review": 2,
-    "Documentation": 7
-  },
-  {
-    "Project": "pgd",
-    "Testing": 7,
-    "Coding": 13,
-    "Code-Review": 1,
-    "Documentation": 7
-  },
-  {
-    "Project": "timesync-node",
-    "Testing": 6,
-    "Coding": 15,
-    "Code-Review": 2,
-    "Documentation": 7
-  },
-  {
-    "Project": "fenestra",
-    "Testing": 9,
-    "Coding": 13,
-    "Code-Review": 1,
-    "Documentation": 7
-  },
-  {
-    "Project": "pymesync",
-    "Testing": 8,
-    "Coding": 10,
-    "Code-Review": 2,
-    "Documentation": 7
-  }
-];
+  var data = [];
 
+  // Parse each JSON string into data
+  for (var i = 0; i <= raw_data.length - 1; i++) {
+    data.push(JSON.parse(raw_data[i]));
+  }
 
   var activities = d3.keys(data[0]).filter(function(key) { return key !== "Project"; });
 
@@ -83,7 +53,7 @@ var data = [
       .call(xAxis).append("text")
       .attr("x", 50)
       .attr("dy", "3em")
-      .attr("dx", "9em")
+      .attr("dx", "13em")
       .text("Projects")
       .style("font-size","25px");
 
@@ -91,9 +61,9 @@ var data = [
       .attr("class", "y axis")
       .call(yAxis)
     .append("text")
+     .attr("transform", "rotate(-90)")
       .attr("y", 6)
-      .attr("dy", "9em")
-      .attr("dx", "-3em")
+      .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text("Hours Spent").style("font-size","25px");
 
@@ -105,7 +75,7 @@ var data = [
 
   Project.selectAll("rect")
       .data(function(d) { return d.ages; })
-    .enter().append("rect")
+      .enter().append("rect")
       .attr("width", x1.rangeBand())
       .attr("x", function(d) { return x1(d.name); })
       .attr("y", function(d) { return y(d.value); })
@@ -114,9 +84,9 @@ var data = [
 
   var legend = svg.selectAll(".legend")
       .data(activities.slice().reverse())
-    .enter().append("g")
+      .enter().append("g")
       .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+      .attr("transform", function(d, i) { return "translate(0," + i * 15 + ")"; });
 
   legend.append("rect")
       .attr("x", width - 18)
