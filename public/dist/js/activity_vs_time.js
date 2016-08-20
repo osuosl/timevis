@@ -37,15 +37,15 @@ var svg = d3.select("#chart").append("svg")
     data.push(JSON.parse(raw_data[i]));
   }
 
-  var activities = d3.keys(data[0]).filter(function(key) { return key !== "Project"; });
+  var activityName = d3.keys(data[0]).filter(function(key) { return key !== "Project"; });
 
   data.forEach(function(d) {
-    d.ages = activities.map(function(name) { return {name: name, value: +d[name]}; });
+    d.activity = activityName.map(function(name) { return {name: name, value: +d[name]}; });
   });
 
   x0.domain(data.map(function(d) { return d.Project; }));
-  x1.domain(activities).rangeRoundBands([0, x0.rangeBand()]);
-  y.domain([0, d3.max(data, function(d) { return d3.max(d.ages, function(d) { return d.value; }); })]);
+  x1.domain(activityName).rangeRoundBands([0, x0.rangeBand()]);
+  y.domain([0, d3.max(data, function(d) { return d3.max(d.activity, function(d) { return d.value; }); })]);
 
   svg.append("g")
       .attr("class", "x axis")
@@ -74,7 +74,7 @@ var svg = d3.select("#chart").append("svg")
       .attr("transform", function(d) { return "translate(" + x0(d.Project) + ",0)"; });
 
   Project.selectAll("rect")
-      .data(function(d) { return d.ages; })
+      .data(function(d) { return d.activity; })
       .enter().append("rect")
       .attr("width", x1.rangeBand())
       .attr("x", function(d) { return x1(d.name); })
@@ -83,7 +83,7 @@ var svg = d3.select("#chart").append("svg")
       .style("fill", function(d) { return color(d.name); });
 
   var legend = svg.selectAll(".legend")
-      .data(activities.slice().reverse())
+      .data(activityName.slice().reverse())
       .enter().append("g")
       .attr("class", "legend")
       .attr("transform", function(d, i) { return "translate(0," + i * 15 + ")"; });

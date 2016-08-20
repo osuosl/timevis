@@ -4,13 +4,14 @@
           <h1 class="page-header">Time Spent on each activity for all Projects</h1>
       </div>
   </div>
-  <% if flash[:error]%>
+  <% if error %>
      <div class="alert alert-danger" role="alert">
-         <p><%= flash[:error]%></p>
+         <p><%= error %></p>
      </div>
-  <%end%>
-  <script language=javascript> var raw_data = <%= values %></script>
-  <h1><%= project %></h1>
+  <% else %>
+    <script language=javascript> var raw_data = <%= values %></script>
+    <h1><%= project %></h1>
+  <% end %>
   <div id="chart"></div>
 </div>
 

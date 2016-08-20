@@ -7,7 +7,7 @@
   <form action="/time_per_activity_post", method="post">
     <select class="selectpicker" name="pick_a_project">
       <% values.each do |project| %>
-        <option value=<%= project['name']%>><%= project['name']%></option>
+        <option value=<%= project['name'] %>><%= project['name'] %></option>
       <% end %>
     </select>
     <br><br>
