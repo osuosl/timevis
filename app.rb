@@ -15,7 +15,6 @@ post '/' do
   token = ts.authenticate(username: params[:username],
                           password: params[:password],
                           auth_type: 'password')
-
   # If no error, proceed
   unless error_message(token)
     session['token'] = token['token']
@@ -118,7 +117,6 @@ end
 
 # get_users
 get '/users' do
-  # ts = TimeSync.new(baseurl='http://localhost:8000/v0',token=session['token'])
   if logged_in
     erb :users, locals: { users: @ts.get_users }
   else
@@ -271,15 +269,16 @@ def error_message(obj)
 end
 
 def is_logged_in(obj)
+  check_token_expiration_timer
   if session.key? 'user'
     erb obj
   else
-    flash[:info] = 'You should be logged in to access this page.'
-    redirect '/'
+    not_logged_in
   end
 end
 
 def logged_in
+  check_token_expiration_timer
   if session.key? 'user'
     @ts = TimeSync.new(baseurl='http://localhost:8000/v0',token=session['token'])
     return true
@@ -291,4 +290,18 @@ end
 def not_logged_in
   flash[:info] = 'You should be logged in to access this page.'
   redirect '/'
+end
+
+def check_token_expiration_timer
+  @ts = TimeSync.new(baseurl='http://localhost:8000/v0',token=session['token'])
+  expire = @ts.token_expiration_time
+
+  if expire.is_a? Hash and (expire.key? 'error' or
+                                expire.key? 'rimesync error')
+      not_logged_in
+  end
+
+  if Time.now > expire
+    redirect '/logout'
+  end
 end
