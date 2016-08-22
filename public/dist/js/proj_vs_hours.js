@@ -23,17 +23,15 @@ var svg = d3.select("#chart").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var data = [
-  {project: "what's fresh", Hours: 70},
-  {project: "pgd", Hours: 34},
-  {project: "timesync-node", Hours: 42},
-  {project: "pymesync", Hours: 12},
-  {project: "fenestra", Hours: 9},
-  {project: "timesync-frontend-flask", Hours: 5}
-];
+  var data = [];
+
+  // Parse each JSON string into data
+  for (var i = 0; i <= raw_data.length - 1; i++) {
+    data.push(JSON.parse(raw_data[i]));
+  }
 
   x.domain(data.map(function(d) { return d.project; }));
-  y.domain([0, d3.max(data, function(d) { return d.Hours; })]);
+  y.domain([0, d3.max(data, function(d) { return d.hours; })]);
 
   svg.append("g")
       .attr("class", "x axis")
@@ -62,10 +60,10 @@ var data = [
       .attr("class", "bar")
       .attr("x", function(d) { return x(d.project); })
       .attr("width", x.rangeBand())
-      .attr("y", function(d) { return y(d.Hours); })
-      .attr("height", function(d) { return height - y(d.Hours); });
+      .attr("y", function(d) { return y(d.hours); })
+      .attr("height", function(d) { return height - y(d.hours); });
 
 function type(d) {
-  d.Hours = +d.Hours;
+  d.hours = +d.hours;
   return d;
 }
