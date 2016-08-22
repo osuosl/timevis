@@ -3,6 +3,9 @@ require 'rimesync'
 require_relative 'utils'
 require 'json'
 require 'sinatra/flash'
+require "sinatra/config_file"
+
+config_file '/config.yml'
 
 enable :sessions
 
@@ -11,7 +14,7 @@ get '/' do
 end
 
 post '/' do
-  ts = TimeSync.new(baseurl = 'http://localhost:8000/v0')
+  ts = TimeSync.new(baseurl = settings.url)
   token = ts.authenticate(username: params[:username],
                           password: params[:password],
                           auth_type: 'password')
@@ -280,7 +283,7 @@ end
 def logged_in
   check_token_expiration_timer
   if session.key? 'user'
-    @ts = TimeSync.new(baseurl='http://localhost:8000/v0',token=session['token'])
+    @ts = TimeSync.new(baseurl=settings.url,token=session['token'])
     return true
   else
     return false
@@ -293,7 +296,7 @@ def not_logged_in
 end
 
 def check_token_expiration_timer
-  @ts = TimeSync.new(baseurl='http://localhost:8000/v0',token=session['token'])
+  @ts = TimeSync.new(baseurl=settings.url,token=session['token'])
   expire = @ts.token_expiration_time
 
   if expire.is_a? Hash and (expire.key? 'error' or
