@@ -1,0 +1,18 @@
+<div id="page-wrapper">
+  <div class="row">
+      <div class="col-lg-12">
+          <h1 class="page-header">Time Spent on each activity for all Projects</h1>
+      </div>
+  </div>
+  <form action="/time_per_activity_post", method="post">
+    <select class="selectpicker" name="pick_a_project">
+      <% values.each do |project| %>
+        <option value=<%= project['name'] %>><%= project['name'] %></option>
+      <% end %>
+    </select>
+    <br><br>
+    <div>
+      <input type="submit" class="btn btn-primary" value="Submit">
+    </div>
+  </form>
+</div>

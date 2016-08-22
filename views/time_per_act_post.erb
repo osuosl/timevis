@@ -1,0 +1,18 @@
+<div id="page-wrapper">
+  <div class="row">
+      <div class="col-lg-12">
+          <h1 class="page-header">Time Spent on each activity for all Projects</h1>
+      </div>
+  </div>
+  <% if error %>
+     <div class="alert alert-danger" role="alert">
+         <p><%= error %></p>
+     </div>
+  <% else %>
+    <script language=javascript> var raw_data = <%= values %></script>
+    <h1><%= project %></h1>
+  <% end %>
+  <div id="chart"></div>
+</div>
+
+<script src="dist/js/time_per_act.js"></script>
