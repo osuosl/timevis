@@ -5,7 +5,7 @@ require 'json'
 require 'sinatra/flash'
 require "sinatra/config_file"
 
-config_file '/config.yml'
+config_file './config.yml'
 
 enable :sessions
 

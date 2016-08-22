@@ -13,3 +13,11 @@ def find_project_slug(projects, name)
     end
   end
 end
+
+def find_project(projects, slug)
+  projects.each do |project|
+    if project['slugs'].include? slug
+      return project['name']
+    end
+  end
+end
